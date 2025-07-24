@@ -19,3 +19,22 @@ prepare_base_model:
 training:
   root_dir: artifacts/training
   trained_model_path: artifacts/training/model.h5
+
+
+ #==================================================== Scratch CNN =========================================#
+
+data_preprocessing:
+  root_dir: artifacts/data_preprocessing
+  processed_data_file: artifacts/data_preprocessing/preprocessed_data.npz
+  image_size: 28
+
+model_training:
+  model_dir: artifacts/model_training
+  trained_model_path: artifacts/model_training/kidney_model 
+
+model_evaluation:
+  root_dir: artifacts/model_evaluation
+  test_data_path: artifacts/data_preprocessing/preprocessed_data.npz
+  model_path: artifacts/model_training/kidney_model
+  metric_file_name: artifacts/model_evaluation/metrics.json
+  mlflow_uri: "https://dagshub.com/gowtham-dd/KidneyDiseaseMLOPS.mlflow"

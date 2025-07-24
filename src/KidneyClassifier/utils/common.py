@@ -9,6 +9,7 @@ from box import ConfigBox
 from pathlib import Path
 from typing import Any
 import base64
+import numpy as np
 
 ## Config box- this allows even to access the dictionaries using value also instead of d[key] we can use d.key becoz all yaml returns value as dictionary 
 
@@ -123,6 +124,21 @@ def get_size(path: Path) -> str:
     """
     size_in_kb = round(os.path.getsize(path)/1024)
     return f"~ {size_in_kb} KB"
+
+@ensure_annotations
+def save_numpy(data: np.ndarray, filepath: str):
+    """
+    Save a numpy array to a .npy file.
+
+    Args:
+        data (np.ndarray): The numpy array to save.
+        filepath (str): The destination file path.
+    """
+    # Make sure the directory exists
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    # Save the numpy array
+    np.save(filepath, data)
+    print(f"Saved numpy array to {filepath}")
 
 
 def decodeImage(imgstring, fileName):

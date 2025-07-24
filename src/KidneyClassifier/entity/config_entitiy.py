@@ -35,3 +35,34 @@ class TrainingConfig:
     params_batch_size: int
     params_is_augmentation: bool
     params_image_size: list
+
+
+
+@dataclass(frozen=True)
+class DataPreprocessingConfig:
+    root_dir: Path
+    processed_data_file: Path
+    image_size: int
+
+
+@dataclass(frozen=True)
+class ModelTrainingConfig:
+    root_dir: Path
+    trained_model_path: Path
+    input_shape: tuple
+    epochs: int
+    batch_size: int
+    validation_split: float
+    learning_rate: float
+
+
+@dataclass(frozen=True)
+class ModelEvaluationConfig:
+    root_dir: Path
+    test_data_path: Path
+    model_path: Path
+    metric_file_name: Path
+    mlflow_uri: str
+    batch_size: int
+    target_metric: str
+    all_params: dict  

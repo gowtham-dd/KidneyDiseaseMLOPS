@@ -1,6 +1,6 @@
 from src.KidneyClassifier.constant import *
 from src.KidneyClassifier.utils.common import read_yaml,create_directories 
-from src.KidneyClassifier.entity.config_entitiy import DataIngestionConfig,PrepareBaseModelConfig,TrainingConfig
+from src.KidneyClassifier.entity.config_entitiy import DataIngestionConfig,PrepareBaseModelConfig,TrainingConfig,DataPreprocessingConfig,ModelTrainingConfig,ModelEvaluationConfig
 import os
 class ConfigurationManager:
     def __init__(
@@ -78,3 +78,52 @@ class ConfigurationManager:
         )
 
         return training_config
+    
+    def get_data_preprocessing_config(self) -> DataPreprocessingConfig:
+        config = self.config.data_preprocessing
+        create_directories([config.root_dir])
+
+        return DataPreprocessingConfig(
+            root_dir=Path(config.root_dir),
+            processed_data_file=Path(config.processed_data_file),
+            image_size=config.image_size
+        )
+
+
+
+    def get_model_training_config(self) -> ModelTrainingConfig:
+        config = self.config.model_training
+        params = self.params.model_training
+        
+        create_directories([config.model_dir])
+
+        return ModelTrainingConfig(
+            root_dir=Path(config.model_dir),
+            trained_model_path=Path(config.trained_model_path),
+            input_shape=tuple(params.input_shape),
+            epochs=params.epochs,
+            batch_size=params.batch_size,
+            validation_split=params.validation_split,
+            learning_rate=params.learning_rate
+        )
+
+
+
+    
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        config = self.config.model_evaluation
+        params = self.params.model_evaluation  # or whatever group you use
+
+        create_directories([config.root_dir])
+
+        return ModelEvaluationConfig(
+        root_dir=Path(config.root_dir),
+        test_data_path=Path(config.test_data_path),
+        model_path=Path(config.model_path),
+        metric_file_name=Path(config.metric_file_name),
+        mlflow_uri=config.mlflow_uri,
+        batch_size=params.batch_size,
+        target_metric=params.target_metric,
+        all_params=params  
+        )
+

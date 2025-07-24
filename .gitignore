@@ -137,6 +137,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.kidney
+kidney/
 .env
 .envrc
 .venv
