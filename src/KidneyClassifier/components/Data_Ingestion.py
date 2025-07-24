@@ -12,35 +12,44 @@ class DataIngestion:
         self.config = config
 
     
-    def download_file(self)-> str:
-        '''
-        Fetch data from the url
-        '''
+    def download_file(self) -> str:
+        extracted_dir = self.config.unzipped_data_dir  # path to the unzipped dataset folder
 
-        try: 
-            dataset_url = self.config.source_URL
-            zip_download_dir = self.config.local_data_file
-            os.makedirs("artifacts/data_ingestion", exist_ok=True)
-            logger.info(f"Downloading data from {dataset_url} into file {zip_download_dir}")
+        if os.path.exists(extracted_dir):
+            logger.info(f"Dataset folder already exists at {extracted_dir}. Skipping download.")
+            return extracted_dir
 
-            file_id = dataset_url.split("/")[-2]
-            prefix = 'https://drive.google.com/uc?/export=download&id='
-            gdown.download(prefix+file_id,zip_download_dir)
+    # Proceed to download zip and extract
+        zip_download_dir = self.config.local_data_file
 
-            logger.info(f"Downloaded data from {dataset_url} into file {zip_download_dir}")
+        logger.info(f"Downloading data from {self.config.source_URL} into {zip_download_dir}")
+        filename = gdown.download(url=self.config.source_URL, output=zip_download_dir, quiet=False)
 
-        except Exception as e:
-            raise e
+        logger.info(f"Unzipping file {filename}")
+        with zipfile.ZipFile(zip_download_dir, 'r') as zip_ref:
+            zip_ref.extractall(self.config.unzip_dir)
+
+        logger.info(f"Dataset unzipped to {self.config.unzipped_data_dir}")
+        return self.config.unzipped_data_dir
+
         
     
 
     def extract_zip_file(self):
-        """
-        zip_file_path: str
-        Extracts the zip file into the data directory
-        Function returns None
-        """
-        unzip_path = self.config.unzip_dir
-        os.makedirs(unzip_path, exist_ok=True)
-        with zipfile.ZipFile(self.config.local_data_file, 'r') as zip_ref:
-            zip_ref.extractall(unzip_path)
+      """
+      Extracts the zip file into the data directory if not already extracted.
+      """
+      unzip_path = self.config.unzip_dir
+
+    # Check if unzip_path exists and is not empty
+      if os.path.exists(unzip_path) and os.listdir(unzip_path):
+        logger.info(f"Data already extracted at {unzip_path}. Skipping extraction.")
+        return
+
+      os.makedirs(unzip_path, exist_ok=True)
+      logger.info(f"Extracting zip file {self.config.local_data_file} to {unzip_path}")
+
+      with zipfile.ZipFile(self.config.local_data_file, 'r') as zip_ref:
+         zip_ref.extractall(unzip_path)
+
+      logger.info(f"Extraction complete.")
