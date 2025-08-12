@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Analysis - MediScan AI</title>
+    <meta name="description" content="Upload medical images for AI-powered kidney disease classification and analysis.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-microscope"></i>
+                <span>MediScan AI</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('predict') }}" class="nav-link active">Analysis</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('about') }}" class="nav-link">About</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Medical Image Analysis</h1>
+                <p class="page-description">
+                    Upload kidney CT scan or medical images for AI-powered classification and analysis
+                </p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }}"></i>
+                                {{ message }}
+                                <button class="flash-close">&times;</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="upload-container">
+                    <div class="upload-info">
+                        <h2 class="upload-title">
+                            <i class="fas fa-upload"></i>
+                            Upload Medical Image
+                        </h2>
+                        <p class="upload-description">
+                            Select a kidney CT scan or medical image for AI analysis. Our system supports JPEG, PNG, and DICOM formats.
+                        </p>
+                        
+                        <!-- Guidelines -->
+                        <div class="upload-guidelines">
+                            <h3>Image Guidelines:</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> High-quality CT scans or medical images</li>
+                                <li><i class="fas fa-check"></i> Clear kidney region visibility</li>
+                                <li><i class="fas fa-check"></i> Maximum file size: 10MB</li>
+                                <li><i class="fas fa-check"></i> Supported formats: JPEG, PNG, DICOM</li>
+                            </ul>
+                        </div>
+
+                        <!-- Security Notice -->
+                        <div class="security-notice">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <strong>Privacy & Security</strong>
+                                <p>All medical images are processed securely and deleted after analysis. HIPAA compliant.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <div class="upload-form-container">
+                        <form method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h3>Drag & Drop Medical Image</h3>
+                                <p>or click to browse files</p>
+                                <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png,.dicom" required>
+                                <div class="file-info" id="fileInfo" style="display: none;">
+                                    <i class="fas fa-file-medical"></i>
+                                    <span id="fileName"></span>
+                                    <button type="button" id="removeFile" class="remove-file">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="progress-container" id="progressContainer" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <div class="progress-text" id="progressText">Uploading...</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary btn-large" id="analyzeBtn" disabled>
+                                <i class="fas fa-microscope"></i>
+                                <span>Analyze Medical Image</span>
+                                <div class="btn-loader" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </button>
+                        </form>
+
+                        <!-- Sample Medical Images -->
+                        <div class="sample-images">
+                            <h4>Sample Medical Images</h4>
+                            <p>Click on any sample image to see analysis results:</p>
+                            <div class="sample-grid">
+                                <div class="sample-item" data-condition="normal">
+                                    <div class="sample-placeholder normal">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <span>Normal</span>
+                                </div>
+                                <div class="sample-item" data-condition="cyst">
+                                    <div class="sample-placeholder cyst">
+                                        <i class="fas fa-circle"></i>
+                                    </div>
+                                    <span>Cyst</span>
+                                </div>
+                                <div class="sample-item" data-condition="stone">
+                                    <div class="sample-placeholder stone">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                    <span>Stone</span>
+                                </div>
+                                <div class="sample-item" data-condition="tumor">
+                                    <div class="sample-placeholder tumor">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <span>Tumor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Specifications -->
+            <div class="tech-specs">
+                <h3>Technical Specifications</h3>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <i class="fas fa-brain"></i>
+                        <div>
+                            <strong>AI Model</strong>
+                            <p>Convolutional Neural Network trained on 10,000+ medical images</p>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-bullseye"></i>
+                        <div>
+                            <strong>Accuracy</strong>
+                            <p>85% classification accuracy validated on clinical datasets</p>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Processing Time</strong>
+                            <p>Results delivered within 2-5 seconds of upload</p>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <strong>Security</strong>
+                            <p>End-to-end encryption and HIPAA compliance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-microscope"></i>
+                        <span>MediScan AI</span>
+                    </div>
+                    <p class="footer-description">
+                        Professional AI-powered medical imaging analysis for kidney disease classification.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('predict') }}">Analysis</a></li>
+                        <li><a href="{{ url_for('about') }}">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Technology Info</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-brain"></i> Deep Learning CNN</p>
+                        <p><i class="fas fa-chart-line"></i> 85% Accuracy Rate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MediScan AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+</body>
+</html>
