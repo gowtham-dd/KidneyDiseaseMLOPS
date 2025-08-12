@@ -15,6 +15,10 @@
 
 ---
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a4ec4a7ca6d2a0ad569120ca997fb2cb5b09b676
 ## How to run?
 
 ### STEPS:
