@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - MediScan AI</title>
+    <meta name="description" content="Learn about MediScan AI's advanced kidney disease classification technology and clinical validation.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-microscope"></i>
+                <span>MediScan AI</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('predict') }}" class="nav-link">Analysis</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('about') }}" class="nav-link active">About</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">About MediScan AI</h1>
+            <p class="page-description">
+                Advanced artificial intelligence for kidney disease classification and medical imaging analysis
+            </p>
+        </div>
+
+        <!-- Mission Section -->
+        <section class="mission-section">
+            <div class="container">
+                <div class="mission-content">
+                    <div class="mission-text">
+                        <h2>Our Mission</h2>
+                        <p class="lead">
+                            MediScan AI is dedicated to revolutionizing medical imaging analysis through cutting-edge artificial intelligence, 
+                            providing healthcare professionals with accurate, fast, and reliable kidney disease classification tools.
+                        </p>
+                        <p>
+                            Our advanced deep learning algorithms analyze medical images with 85% accuracy, helping medical professionals 
+                            make informed decisions quickly and efficiently. We combine the latest in AI technology with rigorous 
+                            clinical validation to ensure our tools meet the highest medical standards.
+                        </p>
+                        <p>
+                            By leveraging convolutional neural networks trained on thousands of medical images, we provide 
+                            instant analysis that supports clinical decision-making while maintaining the highest standards 
+                            of patient privacy and data security.
+                        </p>
+                    </div>
+                    <div class="mission-visual">
+                        <div class="about-placeholder">
+                            <i class="fas fa-brain"></i>
+                            <h3>AI Medical Technology</h3>
+                            <p>Advanced deep learning algorithms for medical image analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Section -->
+        <section class="technology-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Advanced Technology</h2>
+                    <p class="section-description">
+                        Our AI system uses state-of-the-art deep learning technology for medical image analysis
+                    </p>
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Deep Learning CNN</h3>
+                        <p>
+                            Our convolutional neural network is specifically designed for medical image analysis, 
+                            trained on thousands of kidney CT scans and medical images.
+                        </p>
+                        <ul class="tech-features">
+                            <li>Multi-layer architecture</li>
+                            <li>Feature extraction optimization</li>
+                            <li>Medical image preprocessing</li>
+                            <li>Real-time inference</li>
+                        </ul>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Clinical Validation</h3>
+                        <p>
+                            Rigorous testing and validation ensure our AI meets clinical standards with 
+                            85% accuracy across diverse medical imaging datasets.
+                        </p>
+                        <ul class="tech-features">
+                            <li>Cross-validation testing</li>
+                            <li>Clinical dataset validation</li>
+                            <li>Performance monitoring</li>
+                            <li>Continuous improvement</li>
+                        </ul>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Security & Privacy</h3>
+                        <p>
+                            HIPAA-compliant infrastructure ensures complete patient data privacy and security 
+                            throughout the analysis process.
+                        </p>
+                        <ul class="tech-features">
+                            <li>End-to-end encryption</li>
+                            <li>Secure data processing</li>
+                            <li>HIPAA compliance</li>
+                            <li>Automatic data deletion</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Applications Section -->
+        <section class="applications-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Clinical Applications</h2>
+                    <p class="section-description">
+                        MediScan AI supports various medical applications and use cases
+                    </p>
+                </div>
+                <div class="applications-grid">
+                    <div class="application-card">
+                        <div class="app-header">
+                            <i class="fas fa-hospital"></i>
+                            <h3>Hospital Systems</h3>
+                        </div>
+                        <p>
+                            Integration with hospital imaging systems for streamlined workflow and 
+                            enhanced diagnostic capabilities in radiology departments.
+                        </p>
+                        <div class="app-benefits">
+                            <span class="benefit-tag">Fast Analysis</span>
+                            <span class="benefit-tag">Clinical Support</span>
+                            <span class="benefit-tag">Workflow Integration</span>
+                        </div>
+                    </div>
+                    <div class="application-card">
+                        <div class="app-header">
+                            <i class="fas fa-user-md"></i>
+                            <h3>Medical Professionals</h3>
+                        </div>
+                        <p>
+                            Support for radiologists, nephrologists, and other medical professionals 
+                            in kidney disease diagnosis and treatment planning.
+                        </p>
+                        <div class="app-benefits">
+                            <span class="benefit-tag">Decision Support</span>
+                            <span class="benefit-tag">Accuracy</span>
+                            <span class="benefit-tag">Time Saving</span>
+                        </div>
+                    </div>
+                    <div class="application-card">
+                        <div class="app-header">
+                            <i class="fas fa-flask"></i>
+                            <h3>Research Labs</h3>
+                        </div>
+                        <p>
+                            Advanced tools for medical research, clinical studies, and development 
+                            of new diagnostic methodologies.
+                        </p>
+                        <div class="app-benefits">
+                            <span class="benefit-tag">Research Tools</span>
+                            <span class="benefit-tag">Data Analysis</span>
+                            <span class="benefit-tag">Clinical Studies</span>
+                        </div>
+                    </div>
+                    <div class="application-card">
+                        <div class="app-header">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>Medical Education</h3>
+                        </div>
+                        <p>
+                            Educational tools for medical students and residents to learn 
+                            kidney disease classification and medical imaging analysis.
+                        </p>
+                        <div class="app-benefits">
+                            <span class="benefit-tag">Learning Tool</span>
+                            <span class="benefit-tag">Training</span>
+                            <span class="benefit-tag">Education</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Validation Section -->
+        <section class="validation-section">
+            <div class="container">
+                <div class="validation-content">
+                    <div class="validation-stats">
+                        <div class="stat-card">
+                            <span class="stat-number">85%</span>
+                            <span class="stat-label">Accuracy</span>
+                            <span class="stat-description">Clinical validation accuracy</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">10K+</span>
+                            <span class="stat-label">Images</span>
+                            <span class="stat-description">Training dataset size</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">4</span>
+                            <span class="stat-label">Conditions</span>
+                            <span class="stat-description">Classified conditions</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">&lt;3s</span>
+                            <span class="stat-label">Analysis</span>
+                            <span class="stat-description">Processing time</span>
+                        </div>
+                    </div>
+                    <div class="validation-details">
+                        <h3>Clinical Validation</h3>
+                        <ul class="validation-list">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Cross-Validation Testing:</strong> Rigorous testing across multiple datasets to ensure consistent performance.
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Clinical Dataset Validation:</strong> Validated on real clinical data from medical institutions.
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Performance Monitoring:</strong> Continuous monitoring and improvement of model performance.
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Medical Professional Review:</strong> Results reviewed and validated by qualified medical professionals.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Research Section -->
+        <section class="research-section">
+            <div class="container">
+                <div class="research-content">
+                    <div class="research-text">
+                        <h3>Ongoing Research</h3>
+                        <p>
+                            Our research team continuously works on improving AI accuracy and expanding 
+                            capabilities to support more medical conditions and imaging modalities.
+                        </p>
+                        <div class="research-areas">
+                            <div class="research-area">
+                                <h4><i class="fas fa-microscope"></i> Advanced Imaging</h4>
+                                <ul>
+                                    <li>Multi-modal imaging analysis</li>
+                                    <li>3D image reconstruction</li>
+                                    <li>Enhanced resolution processing</li>
+                                </ul>
+                            </div>
+                            <div class="research-area">
+                                <h4><i class="fas fa-chart-bar"></i> Model Improvement</h4>
+                                <ul>
+                                    <li>Accuracy enhancement algorithms</li>
+                                    <li>Reduced false positive rates</li>
+                                    <li>Faster processing optimization</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="research-visual">
+                        <div class="research-placeholder">
+                            <i class="fas fa-flask"></i>
+                            <h3>Medical Research Lab</h3>
+                            <p>Continuous research and development for improved medical AI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Our Expertise</h2>
+                    <p class="team-intro">
+                        MediScan AI is developed by a multidisciplinary team of AI researchers, medical professionals, 
+                        and software engineers dedicated to advancing medical technology.
+                    </p>
+                </div>
+                <div class="expertise-grid">
+                    <div class="expertise-card">
+                        <i class="fas fa-brain"></i>
+                        <h3>AI Research</h3>
+                        <p>
+                            Leading experts in deep learning, computer vision, and medical AI with years of experience 
+                            in developing clinical-grade AI systems.
+                        </p>
+                    </div>
+                    <div class="expertise-card">
+                        <i class="fas fa-user-md"></i>
+                        <h3>Medical Advisory</h3>
+                        <p>
+                            Board-certified radiologists and nephrologists provide clinical guidance and validation 
+                            for our AI models and diagnostic recommendations.
+                        </p>
+                    </div>
+                    <div class="expertise-card">
+                        <i class="fas fa-code"></i>
+                        <h3>Software Engineering</h3>
+                        <p>
+                            Experienced software engineers ensure robust, scalable, and secure implementation 
+                            of our AI systems for clinical environments.
+                        </p>
+                    </div>
+                    <div class="expertise-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Security & Compliance</h3>
+                        <p>
+                            Healthcare IT specialists ensure HIPAA compliance, data security, and integration 
+                            with existing medical systems and workflows.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to Experience Advanced Medical AI?</h2>
+                <p>
+                    Join medical professionals worldwide who trust MediScan AI for accurate kidney disease classification.
+                </p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('predict') }}" class="btn btn-primary btn-large">
+                        <i class="fas fa-upload"></i>
+                        Start Analysis
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-microscope"></i>
+                        <span>MediScan AI</span>
+                    </div>
+                    <p class="footer-description">
+                        Professional AI-powered medical imaging analysis for kidney disease classification.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('predict') }}">Analysis</a></li>
+                        <li><a href="{{ url_for('about') }}">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Technology</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-brain"></i> Deep Learning CNN</p>
+                        <p><i class="fas fa-chart-line"></i> 85% Accuracy Rate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MediScan AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
