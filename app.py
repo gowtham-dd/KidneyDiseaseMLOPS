@@ -29,7 +29,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'gowthamdcloudstudyjam@gmail.com'
-app.config['MAIL_PASSWORD'] = 'tdzt uvnz kfnu mvmz'
+app.config['MAIL_PASSWORD'] = 'Key'
 
 # Initialize database and directories
 def init_db():
