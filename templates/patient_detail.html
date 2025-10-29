@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}{{ patient.name }} - Patient Details{% endblock %}
+
+{% block content %}
+<div class="patient-detail-container">
+    <div class="patient-header">
+        <div class="patient-info-card">
+            <h1><i class="fas fa-user-injured"></i> {{ patient.name }}</h1>
+            <div class="patient-details">
+                <div class="detail-item">
+                    <strong>Patient ID:</strong> {{ patient.patient_id }}
+                </div>
+                <div class="detail-item">
+                    <strong>Age:</strong> {{ patient.age or 'Not specified' }}
+                </div>
+                <div class="detail-item">
+                    <strong>Gender:</strong> {{ patient.gender or 'Not specified' }}
+                </div>
+                <div class="detail-item">
+                    <strong>Email:</strong> {{ patient.email or 'Not specified' }}
+                </div>
+                <div class="detail-item">
+                    <strong>Phone:</strong> {{ patient.phone or 'Not specified' }}
+                </div>
+                <div class="detail-item">
+                    <strong>Registered:</strong> {{ patient.created_at }}
+                </div>
+            </div>
+            <div class="patient-actions">
+                <a href="{{ url_for('diagnose') }}?patient_id={{ patient.patient_id }}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-diagnoses"></i> New Diagnosis
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagnosis-history">
+        <h2><i class="fas fa-history"></i> Diagnosis History</h2>
+        
+        {% if diagnoses %}
+        <div class="diagnoses-grid">
+            {% for diagnosis in diagnoses %}
+            <div class="diagnosis-card">
+                <div class="diagnosis-header">
+                    <h4>Diagnosis #{{ diagnosis.id }}</h4>
+                    <span class="diagnosis-date">{{ diagnosis.created_at }}</span>
+                </div>
+                
+                <div class="diagnosis-content">
+                    <div class="diagnosis-stats">
+                        <div class="stat">
+                            <i class="fas fa-disease"></i>
+                            <div>
+                                <label>Condition</label>
+                                <span class="condition {% if diagnosis.condition == 'Tumor' %}critical{% elif diagnosis.condition == 'Stone' %}urgent{% else %}normal{% endif %}">
+                                    {{ diagnosis.condition }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat">
+                            <i class="fas fa-chart-line"></i>
+                            <div>
+                                <label>Confidence</label>
+                                <span class="confidence {% if diagnosis.confidence > 0.9 %}high{% elif diagnosis.confidence > 0.8 %}medium{% else %}low{% endif %}">
+                                    {{ "%.1f"|format(diagnosis.confidence * 100) }}%
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <label>Severity</label>
+                                <span class="severity severity-{{ diagnosis.severity.lower() }}">
+                                    {{ diagnosis.severity }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <label>Report Sent</label>
+                                <span class="report-status {% if diagnosis.report_sent %}sent{% else %}pending{% endif %}">
+                                    {{ 'Yes' if diagnosis.report_sent else 'No' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if diagnosis.image_path %}
+                    <div class="diagnosis-image">
+                        <img src="{{ url_for('uploaded_file', filename=diagnosis.image_path) }}" 
+                             alt="CT Scan Result" 
+                             onerror="this.style.display='none'">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-diagnoses">
+            <div class="no-data-message">
+                <i class="fas fa-clipboard-list fa-3x"></i>
+                <h3>No Diagnoses Yet</h3>
+                <p>This patient hasn't had any diagnoses yet.</p>
+                <a href="{{ url_for('diagnose') }}?patient_id={{ patient.patient_id }}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-diagnoses"></i> Perform First Diagnosis
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.patient-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.patient-info-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.patient-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.detail-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.patient-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.diagnoses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.diagnosis-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.diagnosis-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.diagnosis-header h4 {
+    margin: 0;
+}
+
+.diagnosis-date {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.diagnosis-content {
+    padding: 20px;
+}
+
+.diagnosis-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.stat i {
+    color: #667eea;
+    font-size: 1.2em;
+}
+
+.stat label {
+    display: block;
+    font-size: 0.8em;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.condition.critical { color: #dc3545; font-weight: bold; }
+.condition.urgent { color: #ffc107; font-weight: bold; }
+.condition.normal { color: #28a745; font-weight: bold; }
+
+.confidence.high { color: #28a745; font-weight: bold; }
+.confidence.medium { color: #ffc107; font-weight: bold; }
+.confidence.low { color: #dc3545; font-weight: bold; }
+
+.report-status.sent { color: #28a745; font-weight: bold; }
+.report-status.pending { color: #ffc107; font-weight: bold; }
+
+.diagnosis-image img {
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.no-diagnoses {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.no-data-message i {
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.no-data-message h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.no-data-message p {
+    color: #888;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .patient-detail-container {
+        padding: 10px;
+    }
+    
+    .diagnoses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .patient-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

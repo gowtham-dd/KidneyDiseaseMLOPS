@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnose - Kidney Diagnosis System{% endblock %}
+
+{% block content %}
+<div class="diagnose-container">
+    <div class="diagnose-header">
+        <h1><i class="fas fa-diagnoses"></i> Kidney CT Scan Diagnosis</h1>
+        <p>Upload kidney CT scan images for automated diagnosis and report generation</p>
+    </div>
+
+    <div class="diagnose-content">
+        <div class="upload-section">
+            <div class="upload-card">
+                <h3><i class="fas fa-upload"></i> Upload CT Scan</h3>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="patient_id">Patient ID *</label>
+                        <input type="text" id="patient_id" name="patient_id" 
+                               value="{{ patient_id }}"
+                               placeholder="Enter patient ID" required>
+                        <small>Enter existing patient ID or create new one</small>
+                    </div>
+                    
+                    <div class="file-upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Drag & Drop or Click to Upload</h4>
+                        <p>Supported formats: JPG, PNG (CT Scan Images)</p>
+                        <input type="file" id="fileInput" name="file" accept="image/*" hidden>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                            Choose File
+                        </button>
+                    </div>
+                    
+                    <div id="fileInfo" class="file-info" style="display: none;">
+                        <i class="fas fa-file-medical"></i>
+                        <span id="fileName"></span>
+                        <button type="button" class="btn-remove" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-process" disabled>
+                        <i class="fas fa-play"></i> Analyze CT Scan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-card">
+                <h3><i class="fas fa-file-medical-alt"></i> Diagnosis Report</h3>
+                <div id="resultsContent" class="results-content">
+                    <div class="placeholder-message">
+                        <i class="fas fa-kidneys"></i>
+                        <p>Upload a CT scan to generate diagnosis report</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Analyzing CT scan...</p>
+    </div>
+</div>
+{% endblock %}
