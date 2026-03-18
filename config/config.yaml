@@ -26,15 +26,15 @@ training:
 data_preprocessing:
   root_dir: artifacts/data_preprocessing
   processed_data_file: artifacts/data_preprocessing/preprocessed_data.npz
-  image_size: 28
+  image_size: 128
 
 model_training:
   model_dir: artifacts/model_training
-  trained_model_path: artifacts/model_training/kidney_model 
+  trained_model_path: artifacts/model_training/pnemonia/xgb_model.pkl
 
 model_evaluation:
   root_dir: artifacts/model_evaluation
   test_data_path: artifacts/data_preprocessing/preprocessed_data.npz
-  model_path: artifacts/model_training/kidney_model
+  model_path: artifacts/model_training/pnemonia/xgb_model.pkl
   metric_file_name: artifacts/model_evaluation/metrics.json
   mlflow_uri: "https://dagshub.com/gowtham-dd/KidneyDiseaseMLOPS.mlflow"

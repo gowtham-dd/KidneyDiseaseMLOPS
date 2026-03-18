@@ -1,8 +1,8 @@
 import numpy as np
 from pathlib import Path
-from KidneyClassifier.config.configuration import ConfigurationManager
-from KidneyClassifier.components.ModelTrainingCNN import ModelTrainer
-from KidneyClassifier import logger
+from ChestDiseaseRadio.config.configuration import ConfigurationManager
+from ChestDiseaseRadio.components.ModelTrainingCNN import ModelTrainer
+from ChestDiseaseRadio import logger
 
 STAGE_NAME = "Model Training"
 

@@ -2,10 +2,10 @@ import os
 import urllib.request as request
 import zipfile
 import pandas as pd
-from KidneyClassifier import logger
-from KidneyClassifier.utils.common import get_size
+from ChestDiseaseRadio import logger
+from ChestDiseaseRadio.utils.common import get_size
 import gdown
-from src.KidneyClassifier.entity.config_entitiy import DataIngestionConfig
+from src.ChestDiseaseRadio.entity.config_entitiy import DataIngestionConfig
 
 class DataIngestion:
     def __init__(self, config: DataIngestionConfig):

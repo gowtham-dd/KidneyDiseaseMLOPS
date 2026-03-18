@@ -1,182 +1,251 @@
 {% extends "base.html" %}
+{% block title %}Dashboard – PulmoScan{% endblock %}
 
-{% block title %}Dashboard - Kidney Diagnosis System{% endblock %}
-
-{% block content %}
-<div class="dashboard">
-    <div class="dashboard-header">
-        <h1><i class="fas fa-tachometer-alt"></i> Patient Dashboard</h1>
-        <button class="btn btn-primary" onclick="showAddPatientModal()">
-            <i class="fas fa-plus"></i> Add New Patient
-        </button>
-    </div>
-
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ patients|length }}</h3>
-                <p>Total Patients</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-file-medical"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ patients|sum(attribute='diagnosis_count') }}</h3>
-                <p>Total Diagnoses</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="patients-table">
-        <h2>Patient List</h2>
-        {% if patients %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Patient ID</th>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Diagnoses</th>
-                    <th>Last Visit</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for patient in patients %}
-                <tr>
-                    <td>{{ patient.patient_id }}</td>
-                    <td>{{ patient.name }}</td>
-                    <td>{{ patient.age or 'N/A' }}</td>
-                    <td>{{ patient.gender or 'N/A' }}</td>
-                    <td>{{ patient.email or 'N/A' }}</td>
-                    <td>{{ patient.diagnosis_count }}</td>
-                    <td>{{ patient.last_diagnosis or 'Never' }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" 
-                               class="btn btn-sm btn-info">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="{{ url_for('diagnose') }}?patient_id={{ patient.patient_id }}" 
-                               class="btn btn-sm btn-primary">
-                                <i class="fas fa-diagnoses"></i> Diagnose
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="no-patients">
-            <div class="no-data-message">
-                <i class="fas fa-users fa-3x"></i>
-                <h3>No Patients Yet</h3>
-                <p>Get started by adding your first patient.</p>
-                <button class="btn btn-primary" onclick="showAddPatientModal()">
-                    <i class="fas fa-plus"></i> Add First Patient
-                </button>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Add Patient Modal -->
-<div id="addPatientModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Add New Patient</h3>
-            <span class="close" onclick="closeAddPatientModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="addPatientForm">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" placeholder="Enter patient's full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="age">Age</label>
-                    <input type="number" id="age" name="age" placeholder="Enter age">
-                </div>
-                <div class="form-group">
-                    <label for="gender">Gender</label>
-                    <select id="gender" name="gender">
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter email address">
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input type="tel" id="phone" name="phone" placeholder="Enter phone number">
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeAddPatientModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="addPatient()">Add Patient</button>
-        </div>
-    </div>
-</div>
-
+{% block head %}
 <style>
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+.page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
 }
-
-.no-patients {
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-top: 20px;
+.page-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem; font-weight: 700; color: var(--text);
 }
+.page-header h1 span { color: var(--primary); }
 
-.no-data-message i {
-    color: #ddd;
-    margin-bottom: 20px;
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 22px; display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow); transition: transform .2s;
 }
-
-.no-data-message h3 {
-    color: #666;
-    margin-bottom: 10px;
+.stat-card:hover { transform: translateY(-2px); }
+.stat-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0;
 }
+.stat-icon.blue  { background: var(--primary-light); color: var(--primary); }
+.stat-icon.green { background: #d1fae5; color: #059669; }
+.stat-icon.orange{ background: #fff7ed; color: #ea580c; }
+.stat-label { font-size: .82rem; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
+.stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; font-weight: 700; color: var(--text); }
 
-.no-data-message p {
-    color: #888;
-    margin-bottom: 20px;
+/* TABLE CARD */
+.table-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
 }
-
-/* Modal scrolling fix */
-.modal-content {
-    max-height: 90vh;
-    overflow-y: auto;
+.table-card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
 }
+.table-card-head h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+    text-align: left; padding: 12px 16px;
+    font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+}
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 14px 16px; font-size: .88rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
 
-@media (max-width: 768px) {
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .action-buttons .btn {
-        margin-bottom: 5px;
-    }
+.pid-chip {
+    display: inline-block; background: var(--primary-light); color: var(--primary);
+    font-family: 'Space Grotesk', sans-serif; font-size: .8rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px;
+}
+.action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.empty-state {
+    text-align: center; padding: 80px 20px;
+}
+.empty-icon {
+    width: 80px; height: 80px; background: var(--surface2); border-radius: 20px;
+    display: grid; place-items: center; margin: 0 auto 16px;
+    font-size: 2rem; color: var(--text-light);
+}
+.empty-state h3 { font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); margin-bottom: 8px; }
+.empty-state p  { color: var(--text-light); font-size: .9rem; margin-bottom: 20px; }
+
+@media (max-width: 640px) {
+    thead th:nth-child(4),
+    tbody td:nth-child(4),
+    thead th:nth-child(5),
+    tbody td:nth-child(5) { display: none; }
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Patient <span>Dashboard</span></h1>
+    <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('open')">
+        <i class="fas fa-user-plus"></i> Add Patient
+    </button>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+        <div>
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-value">{{ patients|length }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-file-medical"></i></div>
+        <div>
+            <div class="stat-label">Total Diagnoses</div>
+            <div class="stat-value">{{ patients|sum(attribute='diagnosis_count') }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-x-ray"></i></div>
+        <div>
+            <div class="stat-label">Scan Types</div>
+            <div class="stat-value">3</div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Table -->
+<div class="table-card">
+    <div class="table-card-head">
+        <h2><i class="fas fa-list" style="color:var(--primary);margin-right:8px"></i>Patient Records</h2>
+        <span style="font-size:.82rem;color:var(--text-muted)">{{ patients|length }} record{% if patients|length != 1 %}s{% endif %}</span>
+    </div>
+
+    {% if patients %}
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Diagnoses</th>
+                <th>Last Visit</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in patients %}
+            <tr>
+                <td><span class="pid-chip">{{ p.patient_id }}</span></td>
+                <td><strong>{{ p.name }}</strong></td>
+                <td>{{ p.age or '–' }}</td>
+                <td>{{ p.gender or '–' }}</td>
+                <td style="color:var(--text-muted)">{{ p.email or '–' }}</td>
+                <td>
+                    <span class="badge {% if p.diagnosis_count > 0 %}badge-normal{% else %}badge-medium{% endif %}">
+                        {{ p.diagnosis_count }}
+                    </span>
+                </td>
+                <td style="color:var(--text-muted);font-size:.82rem">{{ p.last_diagnosis or 'Never' }}</td>
+                <td>
+                    <div class="action-group">
+                        <a href="{{ url_for('patient_detail', patient_id=p.patient_id) }}" class="btn btn-sm btn-info">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{{ url_for('diagnose') }}?patient_id={{ p.patient_id }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-x-ray"></i> Diagnose
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-user-injured"></i></div>
+        <h3>No patients yet</h3>
+        <p>Add your first patient to get started with chest disease diagnostics.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('open')">
+            <i class="fas fa-user-plus"></i> Add First Patient
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD PATIENT MODAL -->
+<div id="addModal" class="modal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="fas fa-user-plus" style="color:var(--primary);margin-right:8px"></i>Add New Patient</h3>
+            <button class="modal-close" onclick="document.getElementById('addModal').classList.remove('open')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="inp-name" placeholder="Patient's full name">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="inp-age" placeholder="Age">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="inp-gender">
+                        <option value="">Select…</option>
+                        <option>Male</option><option>Female</option><option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="inp-email" placeholder="patient@email.com">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="inp-phone" placeholder="+91 00000 00000">
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-secondary" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitAddPatient()"><i class="fas fa-save"></i> Save Patient</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function submitAddPatient() {
+    const name = document.getElementById('inp-name').value.trim();
+    if (!name) { showToast('Patient name is required', 'error'); return; }
+    const payload = {
+        name,
+        age: document.getElementById('inp-age').value,
+        gender: document.getElementById('inp-gender').value,
+        email: document.getElementById('inp-email').value,
+        phone: document.getElementById('inp-phone').value,
+    };
+    try {
+        const r = await fetch('/add_patient', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        const d = await r.json();
+        if (d.success) {
+            showToast(`Patient added – ID: ${d.patient_id}`, 'success');
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            showToast(d.error || 'Failed to add patient', 'error');
+        }
+    } catch(e) { showToast('Network error', 'error'); }
+}
+// Close modal on backdrop click
+document.getElementById('addModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+</script>
 {% endblock %}

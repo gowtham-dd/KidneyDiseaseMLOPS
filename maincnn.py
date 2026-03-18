@@ -1,8 +1,8 @@
-from src.KidneyClassifier import logger
-from src.KidneyClassifier.pipeline.Data_Ingestion_pipeline import DataIngestionTrainingPipeline
-from src.KidneyClassifier.pipeline.Data_PreProcessingCNN import DataPreprocessingTrainingPipeline
-from src.KidneyClassifier.pipeline.Model_Training_CNN_pipeline import ModelTrainingCNNPipeline
-from src.KidneyClassifier.pipeline.CNN_Evaluation_pipeline import CNNEvaluationPipeline
+from src.ChestDiseaseRadio import logger
+from src.ChestDiseaseRadio.pipeline.Data_Ingestion_pipeline import DataIngestionTrainingPipeline
+from src.ChestDiseaseRadio.pipeline.Data_PreProcessingCNN import DataPreprocessingTrainingPipeline
+from src.ChestDiseaseRadio.pipeline.Model_Training_CNN_pipeline import ModelTrainingCNNPipeline
+from src.ChestDiseaseRadio.pipeline.CNN_Evaluation_pipeline import CNNEvaluationPipeline
 
 # dagshub.init(repo_owner='gowtham-dd', repo_name='Introvert-Vs-Extrovert', mlflow=True)
 

@@ -1,71 +1,562 @@
 {% extends "base.html" %}
+{% block title %}Diagnose – PulmoScan{% endblock %}
 
-{% block title %}Diagnose - Kidney Diagnosis System{% endblock %}
+{% block head %}
+<style>
+/* ── PAGE LAYOUT ── */
+.diag-header { margin-bottom: 28px; }
+.diag-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem; font-weight: 700;
+}
+.diag-header h1 span { color: var(--primary); }
+.diag-header p { color: var(--text-muted); margin-top: 6px; font-size: .93rem; }
+
+.diag-grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+@media (max-width: 900px) { .diag-grid { grid-template-columns: 1fr; } }
+
+.panel {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
+}
+.panel-head {
+    padding: 18px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+}
+.panel-head h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; }
+.panel-head .ph-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--primary-light); color: var(--primary);
+    display: grid; place-items: center; font-size: .9rem;
+}
+.panel-body { padding: 22px; }
+
+/* ── SCAN TYPE SELECTOR ── */
+.scan-type-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+.scan-type-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 8px; border-radius: 10px; cursor: pointer;
+    border: 2px solid var(--border); background: var(--surface2);
+    transition: all .2s; text-align: center;
+}
+.scan-type-btn .stype-icon { font-size: 1.4rem; color: var(--text-light); transition: color .2s; }
+.scan-type-btn .stype-label { font-size: .78rem; font-weight: 600; color: var(--text-muted); transition: color .2s; }
+.scan-type-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+.scan-type-btn:hover .stype-icon,
+.scan-type-btn:hover .stype-label { color: var(--primary); }
+.scan-type-btn.selected { border-color: var(--primary); background: var(--primary-light); }
+.scan-type-btn.selected .stype-icon,
+.scan-type-btn.selected .stype-label { color: var(--primary); }
+
+/* ── UPLOAD AREA ── */
+.upload-drop {
+    border: 2px dashed var(--border); border-radius: 12px;
+    padding: 36px 20px; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--surface2);
+    margin-bottom: 16px;
+}
+.upload-drop:hover, .upload-drop.drag-over {
+    border-color: var(--primary); background: var(--primary-light);
+}
+.upload-drop .ud-icon { font-size: 2.4rem; color: var(--text-light); margin-bottom: 10px; }
+.upload-drop h4 { font-size: .95rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.upload-drop p  { font-size: .8rem; color: var(--text-light); }
+
+.file-preview {
+    display: none; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 10px; background: var(--surface2);
+    border: 1px solid var(--border); margin-bottom: 16px;
+}
+.file-preview.show { display: flex; }
+.file-preview .fp-thumb {
+    width: 52px; height: 52px; border-radius: 8px; object-fit: cover;
+    border: 2px solid var(--border);
+}
+.file-preview .fp-name { font-size: .88rem; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-preview .fp-size { font-size: .78rem; color: var(--text-muted); }
+.fp-remove { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; }
+
+/* ── RESULTS ── */
+.results-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 20px; color: var(--text-light); text-align: center; gap: 12px;
+}
+.results-placeholder i { font-size: 3rem; opacity: .4; }
+.results-placeholder p { font-size: .9rem; }
+
+.result-block { animation: fadeIn .4s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.result-condition-card {
+    border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 16px;
+}
+.result-condition-card.sev-low    { background: #ecfdf5; border: 1px solid #a7f3d0; }
+.result-condition-card.sev-medium { background: #fffbeb; border: 1px solid #fde68a; }
+.result-condition-card.sev-high   { background: #fef2f2; border: 1px solid #fecaca; }
+.rcc-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 1.5rem; flex-shrink: 0;
+}
+.sev-low    .rcc-icon { background: #d1fae5; color: #059669; }
+.sev-medium .rcc-icon { background: #fef3c7; color: #d97706; }
+.sev-high   .rcc-icon { background: #fee2e2; color: #dc2626; }
+.rcc-condition { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.rcc-meta { font-size: .83rem; color: var(--text-muted); margin-top: 2px; }
+
+.confidence-bar-wrap { margin-bottom: 18px; }
+.conf-label { display: flex; justify-content: space-between; font-size: .82rem; font-weight: 500; margin-bottom: 6px; }
+.conf-bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.conf-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width 1s ease; }
+
+.findings-list, .rec-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.findings-list li, .rec-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: .88rem; padding: 8px 12px; border-radius: 8px; background: var(--surface2);
+}
+.findings-list li i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+.rec-list li i { color: var(--success); margin-top: 2px; flex-shrink: 0; }
+
+.section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: .88rem;
+    font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--text-muted); margin: 18px 0 10px;
+}
+
+.scan-image-wrap {
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+    margin-bottom: 18px;
+}
+.scan-image-wrap img { width: 100%; display: block; }
+
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(15,23,42,.6); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+}
+.loading-overlay.show { display: flex; }
+.loading-spinner {
+    background: var(--surface); border-radius: 16px;
+    padding: 32px 48px; text-align: center; box-shadow: var(--shadow-lg);
+}
+.spinner-ring {
+    width: 52px; height: 52px; border: 4px solid var(--border);
+    border-top-color: var(--primary); border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-spinner p { color: var(--text-muted); font-size: .9rem; }
+
+/* ── FLOATING CHAT ── */
+#chatFab {
+    position: fixed; bottom: 28px; right: 28px; z-index: 200;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--primary); color: white;
+    border: none; cursor: pointer; box-shadow: 0 6px 24px rgba(29,107,243,.4);
+    display: grid; place-items: center; font-size: 1.2rem;
+    transition: transform .2s, box-shadow .2s;
+}
+#chatFab:hover { transform: scale(1.08); box-shadow: 0 8px 32px rgba(29,107,243,.5); }
+
+#chatWindow {
+    position: fixed; bottom: 96px; right: 28px; z-index: 200;
+    width: 360px; max-height: 520px;
+    background: var(--surface); border-radius: 16px;
+    box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+    display: none; flex-direction: column; overflow: hidden;
+    animation: slideUp .25s ease;
+}
+#chatWindow.open { display: flex; }
+.chat-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    background: var(--primary);
+}
+.chat-head .ch-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,.2); display: grid; place-items: center; color: white; font-size: .9rem;
+}
+.chat-head h4 { color: white; font-size: .92rem; font-weight: 600; flex: 1; }
+.chat-head p  { color: rgba(255,255,255,.7); font-size: .75rem; }
+.chat-close { background: none; border: none; color: rgba(255,255,255,.7); cursor: pointer; font-size: 1rem; }
+
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 86%; font-size: .86rem; line-height: 1.5; }
+.msg.bot { align-self: flex-start; }
+.msg.user { align-self: flex-end; }
+.msg-bubble {
+    padding: 10px 14px; border-radius: 12px;
+}
+.msg.bot  .msg-bubble { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; }
+.msg.user .msg-bubble { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+.msg-time { font-size: .7rem; color: var(--text-light); margin-top: 3px; }
+.msg.user .msg-time { text-align: right; }
+
+.chat-input-row {
+    display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border);
+}
+.chat-input-row input {
+    flex: 1; padding: 9px 14px; border-radius: 999px;
+    border: 1.5px solid var(--border); font-family: inherit; font-size: .86rem;
+}
+.chat-input-row input:focus { outline: none; border-color: var(--primary); }
+.chat-send {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--primary); color: white; border: none; cursor: pointer;
+    display: grid; place-items: center; font-size: .9rem;
+    flex-shrink: 0; align-self: center;
+}
+.typing-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--text-light); animation: blink 1.4s infinite; }
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="diagnose-container">
-    <div class="diagnose-header">
-        <h1><i class="fas fa-diagnoses"></i> Kidney CT Scan Diagnosis</h1>
-        <p>Upload kidney CT scan images for automated diagnosis and report generation</p>
-    </div>
+<div class="diag-header">
+    <h1>Chest <span>Scan Diagnosis</span></h1>
+    <p>Select scan type, upload an image, and receive an AI-powered clinical report instantly</p>
+</div>
 
-    <div class="diagnose-content">
-        <div class="upload-section">
-            <div class="upload-card">
-                <h3><i class="fas fa-upload"></i> Upload CT Scan</h3>
-                
-                <form id="uploadForm" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="patient_id">Patient ID *</label>
-                        <input type="text" id="patient_id" name="patient_id" 
-                               value="{{ patient_id }}"
-                               placeholder="Enter patient ID" required>
-                        <small>Enter existing patient ID or create new one</small>
-                    </div>
-                    
-                    <div class="file-upload-area" id="uploadArea">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h4>Drag & Drop or Click to Upload</h4>
-                        <p>Supported formats: JPG, PNG (CT Scan Images)</p>
-                        <input type="file" id="fileInput" name="file" accept="image/*" hidden>
-                        <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
-                            Choose File
-                        </button>
-                    </div>
-                    
-                    <div id="fileInfo" class="file-info" style="display: none;">
-                        <i class="fas fa-file-medical"></i>
-                        <span id="fileName"></span>
-                        <button type="button" class="btn-remove" onclick="removeFile()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-process" disabled>
-                        <i class="fas fa-play"></i> Analyze CT Scan
-                    </button>
-                </form>
-            </div>
+<div class="diag-grid">
+    <!-- LEFT: upload panel -->
+    <div class="panel">
+        <div class="panel-head">
+            <div class="ph-icon"><i class="fas fa-upload"></i></div>
+            <h3>Upload Scan</h3>
         </div>
+        <div class="panel-body">
+            <!-- Patient ID -->
+            <div class="form-group">
+                <label>Patient ID *</label>
+                <input type="text" id="inp-pid" value="{{ patient_id }}" placeholder="e.g. C001">
+                <small>Enter an existing patient ID or type a new one</small>
+            </div>
 
-        <div class="results-section">
-            <div class="results-card">
-                <h3><i class="fas fa-file-medical-alt"></i> Diagnosis Report</h3>
-                <div id="resultsContent" class="results-content">
-                    <div class="placeholder-message">
-                        <i class="fas fa-kidneys"></i>
-                        <p>Upload a CT scan to generate diagnosis report</p>
-                    </div>
+            <!-- Scan type -->
+            <label style="font-size:.85rem;font-weight:500;color:var(--text-muted);display:block;margin-bottom:8px">Scan Type *</label>
+            <div class="scan-type-group">
+                <div class="scan-type-btn selected" data-type="lung" onclick="selectScanType(this)">
+                    <i class="fas fa-lungs stype-icon"></i>
+                    <span class="stype-label">Lung CT</span>
+                </div>
+                <div class="scan-type-btn" data-type="chest" onclick="selectScanType(this)">
+                    <i class="fas fa-x-ray stype-icon"></i>
+                    <span class="stype-label">Chest X-Ray</span>
+                </div>
+                <div class="scan-type-btn" data-type="pneumonia" onclick="selectScanType(this)">
+                    <i class="fas fa-viruses stype-icon"></i>
+                    <span class="stype-label">Pneumonia</span>
                 </div>
             </div>
+            <div id="modelBadge" style="font-size:.78rem;color:var(--primary);background:var(--primary-light);padding:5px 10px;border-radius:6px;margin-bottom:18px;display:inline-block">
+                🤖 Model: Lung Cancer Detection
+            </div>
+
+            <!-- Drop zone -->
+            <div class="upload-drop" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div class="ud-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <h4>Drag & Drop or Click</h4>
+                <p>Supported: JPG, PNG &nbsp;·&nbsp; Images are resized to 128×128 before analysis</p>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+
+            <div class="file-preview" id="filePreview">
+                <img class="fp-thumb" id="fpThumb" src="" alt="">
+                <div style="flex:1;overflow:hidden">
+                    <div class="fp-name" id="fpName"></div>
+                    <div class="fp-size" id="fpSize"></div>
+                </div>
+                <button class="fp-remove" onclick="clearFile()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <button class="btn btn-primary" id="analyseBtn" disabled onclick="runAnalysis()" style="width:100%;justify-content:center;padding:13px">
+                <i class="fas fa-brain"></i> Analyse Scan
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT: results panel -->
+    <div class="panel">
+        <div class="panel-head">
+            <div class="ph-icon"><i class="fas fa-file-medical-alt"></i></div>
+            <h3>Diagnosis Report</h3>
+        </div>
+        <div class="panel-body" id="resultContainer">
+            <div class="results-placeholder">
+                <i class="fas fa-lungs"></i>
+                <p>Upload a chest scan to generate an AI diagnosis report</p>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Analyzing CT scan...</p>
+        <div class="spinner-ring"></div>
+        <p id="loadingMsg">Analysing scan…</p>
     </div>
 </div>
+
+<!-- Floating Chat FAB -->
+<button id="chatFab" title="Ask our AI assistant" onclick="toggleChat()">
+    <i class="fas fa-comment-medical"></i>
+</button>
+
+<!-- Chat window -->
+<div id="chatWindow">
+    <div class="chat-head">
+        <div class="ch-avatar"><i class="fas fa-robot"></i></div>
+        <div style="flex:1">
+            <h4>PulmoBot</h4>
+            <p>Ask about chest conditions, symptoms & more</p>
+        </div>
+        <button class="chat-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg bot">
+            <div class="msg-bubble">👋 Hi! I'm PulmoBot, your chest health assistant. Ask me about lung diseases, pneumonia, symptoms, or scan results.</div>
+            <div class="msg-time">Just now</div>
+        </div>
+    </div>
+    <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Type your question…" onkeydown="if(event.key==='Enter') sendChat()">
+        <button class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const MODEL_LABELS = {
+    lung:      'Lung Cancer Detection',
+    chest:     'Chest X-Ray Analysis',
+    pneumonia: 'Pneumonia Detection'
+};
+
+let selectedScanType = 'lung';
+let selectedFile = null;
+let lastDiagnosisId = null;
+let lastImagePath = null;
+let chatOpen = false;
+
+// ── Scan Type ──
+function selectScanType(el) {
+    document.querySelectorAll('.scan-type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedScanType = el.dataset.type;
+    document.getElementById('modelBadge').textContent = `🤖 Model: ${MODEL_LABELS[selectedScanType]}`;
+}
+
+// ── File Handling ──
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(f) {
+    selectedFile = f;
+    document.getElementById('fpName').textContent = f.name;
+    document.getElementById('fpSize').textContent = (f.size / 1024).toFixed(1) + ' KB';
+    const reader = new FileReader();
+    reader.onload = ev => document.getElementById('fpThumb').src = ev.target.result;
+    reader.readAsDataURL(f);
+    document.getElementById('filePreview').classList.add('show');
+    document.getElementById('analyseBtn').disabled = false;
+}
+function clearFile() {
+    selectedFile = null;
+    fileInput.value = '';
+    document.getElementById('filePreview').classList.remove('show');
+    document.getElementById('analyseBtn').disabled = true;
+}
+
+// ── Analysis ──
+async function runAnalysis() {
+    const pid = document.getElementById('inp-pid').value.trim();
+    if (!pid) { showToast('Please enter a Patient ID', 'error'); return; }
+    if (!selectedFile) { showToast('Please select a scan image', 'error'); return; }
+
+    const overlay = document.getElementById('loadingOverlay');
+    const messages = ['Preprocessing image to 128×128…', 'Running AI model…', 'Generating clinical report…'];
+    let mi = 0;
+    overlay.classList.add('show');
+    document.getElementById('loadingMsg').textContent = messages[mi];
+    const msgInterval = setInterval(() => {
+        mi = (mi + 1) % messages.length;
+        document.getElementById('loadingMsg').textContent = messages[mi];
+    }, 1800);
+
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    fd.append('patient_id', pid);
+    fd.append('scan_type', selectedScanType);
+
+    try {
+        const r = await fetch('/diagnose', { method: 'POST', body: fd });
+        const data = await r.json();
+        clearInterval(msgInterval);
+        overlay.classList.remove('show');
+        if (data.success) {
+            lastDiagnosisId = data.diagnosis_id;
+            lastImagePath    = data.image_path;
+            renderResult(data);
+            showToast('Diagnosis complete!', 'success');
+        } else {
+            showToast(data.error || 'Analysis failed', 'error');
+        }
+    } catch(e) {
+        clearInterval(msgInterval);
+        overlay.classList.remove('show');
+        showToast('Network error – please try again', 'error');
+    }
+}
+
+function renderResult(d) {
+    const sevClass = d.severity === 'High' ? 'sev-high' : d.severity === 'Medium' ? 'sev-medium' : 'sev-low';
+    const sevIcon  = d.severity === 'High' ? 'fa-exclamation-triangle' : d.severity === 'Medium' ? 'fa-exclamation-circle' : 'fa-check-circle';
+    const confPct  = Math.round(d.confidence * 100);
+
+    const findingsHtml = d.findings.details.map(f =>
+        `<li><i class="fas fa-circle-dot"></i>${f}</li>`).join('');
+    const recHtml = d.recommendations.map(r =>
+        `<li><i class="fas fa-check"></i>${r}</li>`).join('');
+
+    const imgHtml = d.image_url
+        ? `<p class="section-title">Uploaded Scan</p>
+           <div class="scan-image-wrap"><img src="${d.image_url}" alt="Chest scan" onerror="this.parentElement.style.display='none'"></div>`
+        : '';
+
+    document.getElementById('resultContainer').innerHTML = `
+    <div class="result-block">
+        <div class="result-condition-card ${sevClass}">
+            <div class="rcc-icon"><i class="fas ${sevIcon}"></i></div>
+            <div>
+                <div class="rcc-condition">${d.condition}</div>
+                <div class="rcc-meta">Severity: <strong>${d.severity}</strong> &nbsp;·&nbsp; Model: ${d.model_info}</div>
+            </div>
+        </div>
+
+        <div class="confidence-bar-wrap">
+            <div class="conf-label"><span>Confidence</span><span>${confPct}%</span></div>
+            <div class="conf-bar"><div class="conf-fill" style="width:0%" data-pct="${confPct}"></div></div>
+        </div>
+
+        <p class="section-title">Clinical Findings</p>
+        <p style="font-size:.87rem;color:var(--text-muted);margin-bottom:10px">${d.findings.description}</p>
+        <ul class="findings-list">${findingsHtml}</ul>
+
+        <p class="section-title">Recommendations</p>
+        <ul class="rec-list">${recHtml}</ul>
+
+        ${imgHtml}
+
+        <div class="result-actions">
+            <button class="btn btn-outline" onclick="sendReport()"><i class="fas fa-envelope"></i> Email Report</button>
+            <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>`;
+
+    // Animate confidence bar
+    requestAnimationFrame(() => {
+        const fill = document.querySelector('.conf-fill');
+        if (fill) fill.style.width = fill.dataset.pct + '%';
+    });
+}
+
+async function sendReport() {
+    if (!lastDiagnosisId) { showToast('No diagnosis to send', 'error'); return; }
+    try {
+        const r = await fetch('/send_report', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ diagnosis_id: lastDiagnosisId, image_path: lastImagePath })
+        });
+        const d = await r.json();
+        if (d.success) showToast('Report emailed successfully', 'success');
+        else showToast(d.error || 'Failed to send email', 'error');
+    } catch(e) { showToast('Network error', 'error'); }
+}
+
+// ── Chat ──
+function toggleChat() {
+    chatOpen = !chatOpen;
+    const w = document.getElementById('chatWindow');
+    const fab = document.getElementById('chatFab');
+    w.classList.toggle('open', chatOpen);
+    fab.innerHTML = chatOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-comment-medical"></i>';
+}
+
+function nowTime() {
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function appendMsg(text, role) {
+    const el = document.createElement('div');
+    el.className = `msg ${role}`;
+    el.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${nowTime()}</div>`;
+    const box = document.getElementById('chatMessages');
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+    return el;
+}
+
+function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'msg bot';
+    el.id = 'typingIndicator';
+    el.innerHTML = `<div class="msg-bubble">
+        <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+    </div>`;
+    const box = document.getElementById('chatMessages');
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+}
+
+let chatHistory = [];
+
+async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    appendMsg(msg, 'user');
+    chatHistory.push({ role: 'user', content: msg });
+    showTyping();
+
+    try {
+        const r = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ message: msg, history: chatHistory })
+        });
+        const d = await r.json();
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+        const reply = d.reply || d.error || 'Sorry, I could not process that.';
+        appendMsg(reply, 'bot');
+        chatHistory.push({ role: 'assistant', content: reply });
+    } catch(e) {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+        appendMsg('Connection error – please try again.', 'bot');
+    }
+}
+</script>
 {% endblock %}

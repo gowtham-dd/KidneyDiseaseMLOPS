@@ -1,7 +1,7 @@
-from KidneyClassifier.config.configuration import ConfigurationManager
+from ChestDiseaseRadio.config.configuration import ConfigurationManager
 from pathlib import Path
-from KidneyClassifier.components.Data_PreProcessingCNN import DataPreprocessing
-from KidneyClassifier import logger
+from ChestDiseaseRadio.components.Data_PreProcessingCNN import DataPreprocessing
+from ChestDiseaseRadio import logger
 
 STAGE_NAME = "Data Preprocessing"
 

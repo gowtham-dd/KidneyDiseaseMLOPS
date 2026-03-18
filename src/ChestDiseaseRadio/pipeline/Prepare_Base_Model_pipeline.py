@@ -1,6 +1,6 @@
-from KidneyClassifier.config.configuration import ConfigurationManager
-from KidneyClassifier.components.Prepare_Base_Model import PrepareBaseModel
-from KidneyClassifier import logger
+from ChestDiseaseRadio.config.configuration import ConfigurationManager
+from ChestDiseaseRadio.components.Prepare_Base_Model import PrepareBaseModel
+from ChestDiseaseRadio import logger
 
 STAGE_NAME = "Preparing Base Model stage"
 

@@ -2,14 +2,14 @@ import os
 import urllib.request as request
 import zipfile
 import pandas as pd
-from KidneyClassifier import logger
-from KidneyClassifier.utils.common import get_size
+from ChestDiseaseRadio import logger
+from ChestDiseaseRadio.utils.common import get_size
 import gdown
 from pathlib import Path
 
 
 import tensorflow as tf
-from src.KidneyClassifier.entity.config_entitiy import PrepareBaseModelConfig
+from src.ChestDiseaseRadio.entity.config_entitiy import PrepareBaseModelConfig
 
 class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig):

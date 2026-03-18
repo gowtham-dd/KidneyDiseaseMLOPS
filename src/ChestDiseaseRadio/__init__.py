@@ -19,4 +19,4 @@ logging.basicConfig(
     ]
 )
 
-logger = logging.getLogger("KidneyClassifier")
+logger = logging.getLogger("ChestDiseaseRadio")

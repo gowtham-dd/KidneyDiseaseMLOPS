@@ -1,6 +1,6 @@
-from KidneyClassifier.config.configuration import ConfigurationManager
-from KidneyClassifier.components.Data_Ingestion import DataIngestion
-from KidneyClassifier import logger
+from ChestDiseaseRadio.config.configuration import ConfigurationManager
+from ChestDiseaseRadio.components.Data_Ingestion import DataIngestion
+from ChestDiseaseRadio import logger
 
 STAGE_NAME = "Data Ingestion stage"
 

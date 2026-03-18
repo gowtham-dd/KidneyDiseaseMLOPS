@@ -1,6 +1,6 @@
-from KidneyClassifier.config.configuration import ConfigurationManager
-from KidneyClassifier.components.CNN_Evaluation import ModelEvaluation
-from KidneyClassifier import logger
+from ChestDiseaseRadio.config.configuration import ConfigurationManager
+from ChestDiseaseRadio.components.CNN_Evaluation import ModelEvaluation
+from ChestDiseaseRadio import logger
 
 STAGE_NAME = "Evaluation stage"
 

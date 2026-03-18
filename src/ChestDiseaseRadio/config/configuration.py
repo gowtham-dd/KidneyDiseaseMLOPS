@@ -1,6 +1,6 @@
-from src.KidneyClassifier.constant import *
-from src.KidneyClassifier.utils.common import read_yaml,create_directories 
-from src.KidneyClassifier.entity.config_entitiy import DataIngestionConfig,PrepareBaseModelConfig,TrainingConfig,DataPreprocessingConfig,ModelTrainingConfig,ModelEvaluationConfig
+from src.ChestDiseaseRadio.constant import *
+from src.ChestDiseaseRadio.utils.common import read_yaml,create_directories 
+from src.ChestDiseaseRadio.entity.config_entitiy import DataIngestionConfig,PrepareBaseModelConfig,TrainingConfig,DataPreprocessingConfig,ModelTrainingConfig,ModelEvaluationConfig
 import os
 class ConfigurationManager:
     def __init__(

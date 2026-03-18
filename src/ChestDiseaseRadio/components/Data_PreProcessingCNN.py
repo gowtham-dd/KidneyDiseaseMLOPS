@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
 from tqdm import tqdm
-from KidneyClassifier.utils.common import *
+from ChestDiseaseRadio.utils.common import *
 
 CLASS_NAMES = ['Cyst', 'Normal', 'Stone', 'Tumor']
 

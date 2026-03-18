@@ -1,7 +1,7 @@
 
 
 model_training:
-  input_shape: [28, 28, 3]
+  input_shape: [128, 128, 3]
   epochs: 50
   batch_size: 32
   validation_split: 0.2
@@ -9,7 +9,7 @@ model_training:
 
 model_evaluation:
   target_metric: accuracy
-  input_shape: [28, 28, 3]
+  input_shape: [128, 128, 3]
   epochs: 50
   batch_size: 32
   validation_split: 0.2

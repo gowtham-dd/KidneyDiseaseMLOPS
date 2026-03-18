@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
 import mlflow
-from KidneyClassifier.utils.common import save_json
-from KidneyClassifier import logger
+from ChestDiseaseRadio.utils.common import save_json
+from ChestDiseaseRadio import logger
 
 class ModelEvaluation:
     def __init__(self, config):
